@@ -4,7 +4,8 @@ import viteLogo from "/vite.svg";
 import "./App.css";
 import { useEffect } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import Base from "./Base";
+import JobCard from "./JobCard";
+// import Base from "./Base";
 
 // const App = () => {
 //   return (
@@ -15,7 +16,7 @@ import Base from "./Base";
 //   );
 // };
 
-function App() {
+function Base() {
   const [offset, setOffset] = useState(10);
   const [loading, setLoading] = useState(false);
 
@@ -74,13 +75,13 @@ function App() {
     };
 
     try {
-      setLoading(true);
+      // setLoading(true);
       fetch("https://api.weekday.technology/adhoc/getSampleJdJSON", requestOptions)
         .then((response) => response.json())
         .then((result) => {
           setJobs((prevJobs) => [...prevJobs, ...result.jdList]);
           console.log(result.jdList);
-          setLoading(false);
+          // setLoading(false);
         })
         .catch((err) => console.log(err));
     } catch (err) {
@@ -102,16 +103,31 @@ function App() {
   return (
     <>
       <div className="">
-        <h1>Week day</h1>
-        <div
-          id="scrollableDiv"
-          className="job-container"
-        >
-          <Base />
-        </div>
+        {loading ? (
+          "Loading..."
+        ) : (
+          <div className="scroll-wrapper">
+            <InfiniteScroll
+              dataLength={jobs.length}
+              next={fetchMoreData}
+              hasMore={true}
+              loader="....loading"
+              scrollableTarget="scrollableDiv"
+            >
+              <div className="job-card-wrapper">
+                {jobs.map((job, index) => (
+                  <JobCard
+                    key={job.jdUid}
+                    job={job}
+                  />
+                ))}
+              </div>
+            </InfiniteScroll>
+          </div>
+        )}
       </div>
     </>
   );
 }
 
-export default App;
+export default Base;
